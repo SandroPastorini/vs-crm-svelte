@@ -1,12 +1,13 @@
-import { writable } from "svelte/store";
-
-const defaultSettings = {
-    showSideBar: true
+import { writable } from 'svelte/store';
+let showSidebarStore = null;
+if (typeof localStorage !== 'undefined') {
+    showSidebarStore = writable<boolean>(localStorage.showSidebarStore === 'true');
+    
+    showSidebarStore.subscribe((value) =>{    
+        if (!value) return localStorage.removeItem('showSidebarStore');
+        localStorage.showSidebarStore = String(value);
+    });
 }
 
-const userSettings = JSON.parse(localStorage.getItem("userSettings") || JSON.stringify(defaultSettings));
-export const showSideBar = writable(userSettings.showSideBar);
 
-userSettings.subscribe(value => {
-    localStorage.setItem("userSettings", JSON.stringify(value))
-});
+export let showSidebar = showSidebarStore || false;
